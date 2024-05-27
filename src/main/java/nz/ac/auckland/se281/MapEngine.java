@@ -108,10 +108,61 @@ public class MapEngine {
       }
     }
 
+    // Check if the source and destination countries are the same
     if (sourceCountry.equals(destinationCountry)) {
       MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
       return;
     }
+
+    // Find the radial route from the source to the destination
+    List<Country> radialRoute = breathFirstTraversal(sourceCountry);
+    radialRoute = radialRoute.subList(0, radialRoute.indexOf(destinationCountry) + 1);
+
+    // Find the fastest route from the source to the destination
+    Country currentCountry = destinationCountry;
+    Stack<Country> fastestRoute = new Stack<>();
+    fastestRoute.add(currentCountry);
+    while (!currentCountry.equals(sourceCountry)) {
+      Country earliestCountry = earliestCall(currentCountry, radialRoute);
+      fastestRoute.add(earliestCountry);
+      currentCountry = earliestCountry;
+    }
+
+    printCountryArray(fastestRoute);
+  }
+
+  private void printCountryArray(List<Country> countries) {
+    System.out.println("Country Array: ");
+    for (Country c : countries) {
+      System.out.println("\t" + c.getName());
+    }
+  }
+
+  private Country earliestCall(Country country, List<Country> radialRoute) {
+    List<Country> adj = this.adjCountries.get(country);
+    for (Country c : radialRoute) {
+      if (adj.contains(c)) {
+        return c;
+      }
+    }
+    return null;
+  }
+
+  private List<Country> breathFirstTraversal(Country root) {
+    List<Country> visited = new ArrayList<>();
+    Queue<Country> queue = new LinkedList<>();
+    queue.add(root);
+    visited.add(root);
+    while (!queue.isEmpty()) {
+      Country node = queue.poll();
+      for (Country n : adjCountries.get(node)) {
+        if (!visited.contains(n)) {
+          visited.add(n);
+          queue.add(n);
+        }
+      }
+    }
+    return visited;
   }
 
   private Country findCountry(String countryName) throws CountryNotFoundException {
