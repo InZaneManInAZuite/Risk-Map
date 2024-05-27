@@ -127,20 +127,35 @@ public class MapEngine {
       currentCountry = earliestCountry;
     }
 
+    Set<String> continentalPath = new LinkedHashSet<>();
+    continentalPath.add(sourceCountry.getContinent());
+    int totalTax = 0;
+
+    // Print the fastest route and obtain the total tax and continents visited
     int routeLength = fastestRoute.size();
     String routeString = "";
     for (int i = 0; i < routeLength; i++) {
+      continentalPath.add(fastestRoute.peek().getContinent());
+      totalTax += fastestRoute.peek().getTaxFee();
       routeString += ", " + fastestRoute.pop().getName();
     }
     MessageCli.ROUTE_INFO.printMessage("[" + sourceCountry.getName() + routeString + "]");
 
-    printCountryArray(fastestRoute);
+    // Print the continents visited
+    routeString = "";
+    for (String continent : continentalPath) {
+      routeString += continent + ", ";
+    }
+    MessageCli.CONTINENT_INFO.printMessage(
+        "[" + routeString.substring(0, routeString.length() - 2) + "]");
+
+    printArray(continentalPath);
   }
 
-  private void printCountryArray(List<Country> countries) {
-    System.out.println("Country Array: ");
-    for (Country c : countries) {
-      System.out.println("\t" + c.getName());
+  private void printArray(Collection<String> textArray) {
+    System.out.println("Array: ");
+    for (String c : textArray) {
+      System.out.println("\t" + c);
     }
   }
 
