@@ -2,7 +2,6 @@ package nz.ac.auckland.se281;
 
 // Import the necessary libraries
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -50,12 +49,11 @@ public class MapEngine {
     for (String adjData : adjacencies) {
       // Split the adjacency data into its individual components
       String[] adjSplit = adjData.split(",");
-      Country country = null;
       String countryName = adjSplit[0];
       int numAdj = adjSplit.length - 1;
 
       // Find the country to be evaluated in the list of countries
-      country = findCountry(countryName);
+      Country country = findCountry(countryName);
 
       // Obtain the adjacent country to this country and add to map
       for (int i = 1; i <= numAdj; i++) {
@@ -125,7 +123,7 @@ public class MapEngine {
     }
 
     // Find the radial route from the source to the destination
-    List<Country> radialRoute = breathFirstTraversal(sourceCountry);
+    List<Country> radialRoute = searchByBreathFirstTraversal(sourceCountry);
     radialRoute = radialRoute.subList(0, radialRoute.indexOf(destinationCountry) + 1);
 
     // Find the fastest route from the source to the destination
@@ -158,15 +156,6 @@ public class MapEngine {
     MessageCli.TAX_INFO.printMessage(String.valueOf(totalTax));
   }
 
-  // This is simply a helper method to print the array
-  /* Prints every element in a collection */
-  private void printArray(Collection<String> textArray) {
-    System.out.println("Array: ");
-    for (String c : textArray) {
-      System.out.println("\t" + c);
-    }
-  }
-
   // This is a helper method to find the earliest country in the radial route from BFT
   private Country findEarliestCall(Country country, List<Country> radialRoute) {
     List<Country> adj = this.adjCountries.get(country);
@@ -179,14 +168,21 @@ public class MapEngine {
   }
 
   // This is a helper method to perform a breath first traversal
-  private List<Country> breathFirstTraversal(Country root) {
+  private List<Country> searchByBreathFirstTraversal(Country root) {
+    // Initialize variables
     List<Country> visited = new ArrayList<>();
     Queue<Country> queue = new LinkedList<>();
+
+    // Perform the breath first traversal
     queue.add(root);
     visited.add(root);
     while (!queue.isEmpty()) {
       Country node = queue.poll();
+
+      // Add the adjacent countries to the queue
       for (Country n : adjCountries.get(node)) {
+
+        // Add the country to the visited list if it has not been visited
         if (!visited.contains(n)) {
           visited.add(n);
           queue.add(n);
