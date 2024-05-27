@@ -1,6 +1,16 @@
 package nz.ac.auckland.se281;
 
-import java.util.*;
+// Import the necessary libraries
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 
 /** This class is the main entry point. */
 public class MapEngine {
@@ -8,6 +18,7 @@ public class MapEngine {
   private Map<Country, List<Country>> adjCountries;
   private List<Country> listCountries = new ArrayList<>();
 
+  /** The main entry point. */
   public MapEngine() {
     // add other code here if you want
     this.adjCountries = new HashMap<>();
@@ -24,10 +35,10 @@ public class MapEngine {
     for (String countryData : countries) {
 
       // Split the country data into its individual components
-      String[] CountrySplit = countryData.split(",");
-      String name = CountrySplit[0];
-      String continent = CountrySplit[1];
-      int taxFee = Integer.parseInt(CountrySplit[2]);
+      String[] countrySplit = countryData.split(",");
+      String name = countrySplit[0];
+      String continent = countrySplit[1];
+      int taxFee = Integer.parseInt(countrySplit[2]);
       Country country = new Country(name, continent, taxFee);
 
       // Add the country to the adjacency list and country list
@@ -45,7 +56,6 @@ public class MapEngine {
 
       // Find the country to be evaluated in the list of countries
       country = findCountry(countryName);
-      // System.out.println(country.toString());
 
       // Obtain the adjacent country to this country and add to map
       for (int i = 1; i <= numAdj; i++) {
@@ -123,32 +133,28 @@ public class MapEngine {
     Stack<Country> fastestRoute = new Stack<>();
     while (!currentCountry.equals(sourceCountry)) {
       fastestRoute.add(currentCountry);
-      Country earliestCountry = earliestCall(currentCountry, radialRoute);
+      Country earliestCountry = findEarliestCall(currentCountry, radialRoute);
       currentCountry = earliestCountry;
     }
 
+    // Initialize variables to store visited places and the total tax
+    Queue<Country> fastestRouteOrdered = new LinkedList<>();
+    fastestRouteOrdered.add(sourceCountry);
     Set<String> continentalPath = new LinkedHashSet<>();
     continentalPath.add(sourceCountry.getContinent());
     int totalTax = 0;
 
     // Print the fastest route and obtain the total tax and continents visited
     int routeLength = fastestRoute.size();
-    String routeString = "";
     for (int i = 0; i < routeLength; i++) {
       continentalPath.add(fastestRoute.peek().getContinent());
       totalTax += fastestRoute.peek().getTaxFee();
-      routeString += ", " + fastestRoute.pop().getName();
+      fastestRouteOrdered.add(fastestRoute.pop());
     }
-    MessageCli.ROUTE_INFO.printMessage("[" + sourceCountry.getName() + routeString + "]");
 
-    // Print the continents visited
-    routeString = "";
-    for (String continent : continentalPath) {
-      routeString += continent + ", ";
-    }
-    routeString = routeString.substring(0, routeString.length() - 2);
-    MessageCli.CONTINENT_INFO.printMessage("[" + routeString + "]");
-
+    // Print the continents visited and the total tax
+    MessageCli.ROUTE_INFO.printMessage(fastestRouteOrdered.toString());
+    MessageCli.CONTINENT_INFO.printMessage(continentalPath.toString());
     MessageCli.TAX_INFO.printMessage(String.valueOf(totalTax));
   }
 
@@ -161,7 +167,8 @@ public class MapEngine {
     }
   }
 
-  private Country earliestCall(Country country, List<Country> radialRoute) {
+  // This is a helper method to find the earliest country in the radial route from BFT
+  private Country findEarliestCall(Country country, List<Country> radialRoute) {
     List<Country> adj = this.adjCountries.get(country);
     for (Country c : radialRoute) {
       if (adj.contains(c)) {
@@ -171,6 +178,7 @@ public class MapEngine {
     return null;
   }
 
+  // This is a helper method to perform a breath first traversal
   private List<Country> breathFirstTraversal(Country root) {
     List<Country> visited = new ArrayList<>();
     Queue<Country> queue = new LinkedList<>();
@@ -188,6 +196,7 @@ public class MapEngine {
     return visited;
   }
 
+  // This is a helper method to find a country in the list of countries
   private Country findCountry(String countryName) throws CountryNotFoundException {
     for (Country c : listCountries) {
       if (c.getName().equals(countryName)) {
