@@ -5,11 +5,12 @@ import java.util.*;
 /** This class is the main entry point. */
 public class MapEngine {
 
-  private Map<Country, List<Country>> adjCountry;
+  private Map<Country, List<Country>> adjCountries;
+  private ArrayList<Country> listCountries = new ArrayList<>();
 
   public MapEngine() {
     // add other code here if you want
-    this.adjCountry = new HashMap<>();
+    this.adjCountries = new HashMap<>();
 
     loadMap(); // keep this mehtod invocation
   }
@@ -18,9 +19,6 @@ public class MapEngine {
   private void loadMap() {
     List<String> countries = Utils.readCountries();
     List<String> adjacencies = Utils.readAdjacencies();
-
-    // Store all the countries in a list and their adjacent countries in a map
-    ArrayList<Country> listCountry = new ArrayList<>();
 
     // Obtain all the countries as nodes and their individual information
     for (String countryData : countries) {
@@ -33,8 +31,8 @@ public class MapEngine {
       Country country = new Country(name, continent, taxFee);
 
       // Add the country to the adjacency list and country list
-      adjCountry.putIfAbsent(country, new ArrayList<>());
-      listCountry.add(country);
+      adjCountries.putIfAbsent(country, new ArrayList<>());
+      listCountries.add(country);
     }
 
     // Obtain all the adjacent countries for each country as edges
@@ -46,43 +44,49 @@ public class MapEngine {
       int numAdj = adjSplit.length - 1;
 
       // Find the country to be evaluated in the list of countries
-      for (Country c : listCountry) {
-        if (c.getName().equals(countryName)) {
-          country = c;
-          break;
-        }
-      }
+      country = findCountry(countryName);
       // System.out.println(country.toString());
 
       // Obtain the adjacent country to this country and add to map
       for (int i = 1; i <= numAdj; i++) {
         String adjCountryName = adjSplit[i];
-
-        for (Country c : listCountry) {
-          if (c.getName().equals(adjCountryName)) {
-            adjCountry.get(country).add(c);
-            // System.out.println("\t" + c.toString());
-            break;
-          }
-        }
+        adjCountries.get(country).add(findCountry(adjCountryName));
       }
     }
   }
 
   /** this method is invoked when the user run the command info-country. */
   public void showInfoCountry() {
-    // add code here
-    MessageCli.INSERT_COUNTRY.printMessage();
-    String countryName = Utils.scanner.nextLine();
 
-    for (Country c : adjCountry.keySet()) {
-      if (c.getName().equals(Utils.capitalizeFirstLetterOfEachWord(countryName))) {
-        MessageCli.COUNTRY_INFO.printMessage(c.getName(), c.getContinent(), c.strTaxFee());
-        return;
+    // Ask the user for the country name
+    MessageCli.INSERT_COUNTRY.printMessage();
+
+    // Ask user for a valid country name
+    Country country = null;
+    String countryName = null;
+    while (country == null) {
+      try {
+        countryName = Utils.capitalizeFirstLetterOfEachWord(Utils.scanner.nextLine());
+        country = findCountry(countryName);
+      } catch (CountryNotFoundException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(countryName);
       }
     }
+
+    // Print the country information
+    MessageCli.COUNTRY_INFO.printMessage(
+        country.getName(), country.getContinent(), country.strTaxFee());
   }
 
   /** this method is invoked when the user run the command route. */
   public void showRoute() {}
+
+  private Country findCountry(String countryName) throws CountryNotFoundException {
+    for (Country c : listCountries) {
+      if (c.getName().equals(countryName)) {
+        return c;
+      }
+    }
+    throw new CountryNotFoundException();
+  }
 }
