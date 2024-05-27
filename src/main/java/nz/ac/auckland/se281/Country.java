@@ -15,6 +15,18 @@ public class Country {
     return name;
   }
 
+  public String getContinent() {
+    return continent;
+  }
+
+  public int getTaxFee() {
+    return taxFee;
+  }
+
+  public String strTaxFee() {
+    return String.valueOf(taxFee);
+  }
+
   @Override
   public String toString() {
     return "Country{"

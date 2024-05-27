@@ -18,8 +18,8 @@ public class MapEngine {
   private void loadMap() {
     List<String> countries = Utils.readCountries();
     List<String> adjacencies = Utils.readAdjacencies();
-    // add code here to create your data structures
 
+    // Store all the countries in a list and their adjacent countries in a map
     ArrayList<Country> listCountry = new ArrayList<>();
 
     // Obtain all the countries as nodes and their individual information
@@ -37,7 +37,7 @@ public class MapEngine {
       listCountry.add(country);
     }
 
-    // Obtain all the edges between countries
+    // Obtain all the adjacent countries for each country as edges
     for (String adjData : adjacencies) {
       // Split the adjacency data into its individual components
       String[] adjSplit = adjData.split(",");
@@ -45,24 +45,23 @@ public class MapEngine {
       String countryName = adjSplit[0];
       int numAdj = adjSplit.length - 1;
 
-      // Find the country in the list of countries
+      // Find the country to be evaluated in the list of countries
       for (Country c : listCountry) {
         if (c.getName().equals(countryName)) {
           country = c;
           break;
         }
       }
+      // System.out.println(country.toString());
 
-      System.out.println(country.toString());
-
-      // Add the adjacent countries to the adjacency list
+      // Obtain the adjacent country to this country and add to map
       for (int i = 1; i <= numAdj; i++) {
         String adjCountryName = adjSplit[i];
 
         for (Country c : listCountry) {
           if (c.getName().equals(adjCountryName)) {
             adjCountry.get(country).add(c);
-            System.out.println("\t" + c.toString());
+            // System.out.println("\t" + c.toString());
             break;
           }
         }
@@ -73,6 +72,15 @@ public class MapEngine {
   /** this method is invoked when the user run the command info-country. */
   public void showInfoCountry() {
     // add code here
+    MessageCli.INSERT_COUNTRY.printMessage();
+    String countryName = Utils.scanner.nextLine();
+
+    for (Country c : adjCountry.keySet()) {
+      if (c.getName().equals(Utils.capitalizeFirstLetterOfEachWord(countryName))) {
+        MessageCli.COUNTRY_INFO.printMessage(c.getName(), c.getContinent(), c.strTaxFee());
+        return;
+      }
+    }
   }
 
   /** this method is invoked when the user run the command route. */
