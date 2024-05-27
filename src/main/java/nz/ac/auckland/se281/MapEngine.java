@@ -121,12 +121,18 @@ public class MapEngine {
     // Find the fastest route from the source to the destination
     Country currentCountry = destinationCountry;
     Stack<Country> fastestRoute = new Stack<>();
-    fastestRoute.add(currentCountry);
     while (!currentCountry.equals(sourceCountry)) {
+      fastestRoute.add(currentCountry);
       Country earliestCountry = earliestCall(currentCountry, radialRoute);
-      fastestRoute.add(earliestCountry);
       currentCountry = earliestCountry;
     }
+
+    int routeLength = fastestRoute.size();
+    String routeString = "";
+    for (int i = 0; i < routeLength; i++) {
+      routeString += ", " + fastestRoute.pop().getName();
+    }
+    MessageCli.ROUTE_INFO.printMessage("[" + sourceCountry.getName() + routeString + "]");
 
     printCountryArray(fastestRoute);
   }
