@@ -146,12 +146,14 @@ public class MapEngine {
     for (String continent : continentalPath) {
       routeString += continent + ", ";
     }
-    MessageCli.CONTINENT_INFO.printMessage(
-        "[" + routeString.substring(0, routeString.length() - 2) + "]");
+    routeString = routeString.substring(0, routeString.length() - 2);
+    MessageCli.CONTINENT_INFO.printMessage("[" + routeString + "]");
 
-    printArray(continentalPath);
+    MessageCli.TAX_INFO.printMessage(String.valueOf(totalTax));
   }
 
+  // This is simply a helper method to print the array
+  /* Prints every element in a collection */
   private void printArray(Collection<String> textArray) {
     System.out.println("Array: ");
     for (String c : textArray) {
