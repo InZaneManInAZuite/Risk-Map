@@ -11,6 +11,10 @@ public class Country {
     this.taxFee = taxFee;
   }
 
+  public String getName() {
+    return name;
+  }
+
   @Override
   public String toString() {
     return "Country{"

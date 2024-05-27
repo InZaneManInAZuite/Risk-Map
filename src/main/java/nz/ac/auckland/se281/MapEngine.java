@@ -20,16 +20,53 @@ public class MapEngine {
     List<String> adjacencies = Utils.readAdjacencies();
     // add code here to create your data structures
 
+    ArrayList<Country> listCountry = new ArrayList<>();
+
+    // Obtain all the countries as nodes and their individual information
     for (String countryData : countries) {
-      // add code here
+
+      // Split the country data into its individual components
       String[] CountrySplit = countryData.split(",");
       String name = CountrySplit[0];
       String continent = CountrySplit[1];
       int taxFee = Integer.parseInt(CountrySplit[2]);
       Country country = new Country(name, continent, taxFee);
 
+      // Add the country to the adjacency list and country list
       adjCountry.putIfAbsent(country, new ArrayList<>());
+      listCountry.add(country);
+    }
+
+    // Obtain all the edges between countries
+    for (String adjData : adjacencies) {
+      // Split the adjacency data into its individual components
+      String[] adjSplit = adjData.split(",");
+      Country country = null;
+      String countryName = adjSplit[0];
+      int numAdj = adjSplit.length - 1;
+
+      // Find the country in the list of countries
+      for (Country c : listCountry) {
+        if (c.getName().equals(countryName)) {
+          country = c;
+          break;
+        }
+      }
+
       System.out.println(country.toString());
+
+      // Add the adjacent countries to the adjacency list
+      for (int i = 1; i <= numAdj; i++) {
+        String adjCountryName = adjSplit[i];
+
+        for (Country c : listCountry) {
+          if (c.getName().equals(adjCountryName)) {
+            adjCountry.get(country).add(c);
+            System.out.println("\t" + c.toString());
+            break;
+          }
+        }
+      }
     }
   }
 
