@@ -92,7 +92,6 @@ public class MapEngine {
       try {
         tempCountryName = Utils.capitalizeFirstLetterOfEachWord(Utils.scanner.nextLine());
         sourceCountry = findCountry(tempCountryName);
-        tempCountryName = null;
       } catch (CountryNotFoundException e) {
         MessageCli.INVALID_COUNTRY.printMessage(tempCountryName);
       }
@@ -107,6 +106,11 @@ public class MapEngine {
       } catch (CountryNotFoundException e) {
         MessageCli.INVALID_COUNTRY.printMessage(tempCountryName);
       }
+    }
+
+    if (sourceCountry.equals(destinationCountry)) {
+      MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
+      return;
     }
   }
 
