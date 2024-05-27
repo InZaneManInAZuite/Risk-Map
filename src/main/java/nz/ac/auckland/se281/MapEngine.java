@@ -6,7 +6,7 @@ import java.util.*;
 public class MapEngine {
 
   private Map<Country, List<Country>> adjCountries;
-  private ArrayList<Country> listCountries = new ArrayList<>();
+  private List<Country> listCountries = new ArrayList<>();
 
   public MapEngine() {
     // add other code here if you want
@@ -79,7 +79,36 @@ public class MapEngine {
   }
 
   /** this method is invoked when the user run the command route. */
-  public void showRoute() {}
+  public void showRoute() {
+
+    // Initialize variables
+    Country sourceCountry = null;
+    Country destinationCountry = null;
+    String tempCountryName = null;
+
+    // Ask the user for valid source country name
+    MessageCli.INSERT_SOURCE.printMessage();
+    while (sourceCountry == null) {
+      try {
+        tempCountryName = Utils.capitalizeFirstLetterOfEachWord(Utils.scanner.nextLine());
+        sourceCountry = findCountry(tempCountryName);
+        tempCountryName = null;
+      } catch (CountryNotFoundException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(tempCountryName);
+      }
+    }
+
+    // Ask user for a valid destination country name
+    MessageCli.INSERT_DESTINATION.printMessage();
+    while (destinationCountry == null) {
+      try {
+        tempCountryName = Utils.capitalizeFirstLetterOfEachWord(Utils.scanner.nextLine());
+        destinationCountry = findCountry(tempCountryName);
+      } catch (CountryNotFoundException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(tempCountryName);
+      }
+    }
+  }
 
   private Country findCountry(String countryName) throws CountryNotFoundException {
     for (Country c : listCountries) {
